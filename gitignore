@@ -1,0 +1,33 @@
+# Maven: arquivos gerados na compilação e nos testes
+/target/
+**/target/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# VS Code e Eclipse
+.vscode/
+.classpath
+.project
+.settings/
+
+# Arquivos temporários e logs
+*.log
+*.tmp
+*.bak
+*.swp
+*~
+
+# Arquivos do sistema operacional
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Dados locais gerados durante a execução
+/dados/agenda.json
+
+# Preserve pom.xml, src/, mvnw, mvnw.cmd e .mvn/wrapper/
