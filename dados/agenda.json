@@ -1,0 +1,37 @@
+{
+  "pacientes" : [ {
+    "id" : "d3057bc5-96bf-4e89-9f3a-9d4013a33071",
+    "nome" : "Joao",
+    "cpf" : "999",
+    "telefone" : "9"
+  } ],
+  "profissionais" : [ {
+    "id" : "0ad4e465-34e5-4ecc-aa47-09a037d8dc82",
+    "nome" : "Dr. Mario",
+    "especialidade" : "CLINICO_GERAL",
+    "ativo" : true,
+    "valorConsulta" : "300.00"
+  } ],
+  "horarios" : [ {
+    "profissionalId" : "0ad4e465-34e5-4ecc-aa47-09a037d8dc82",
+    "inicio" : "2026-11-10T10:00",
+    "fim" : "2026-11-10T11:00"
+  }, {
+    "profissionalId" : "0ad4e465-34e5-4ecc-aa47-09a037d8dc82",
+    "inicio" : "2026-11-10T11:00",
+    "fim" : "2026-11-10T12:00"
+  }, {
+    "profissionalId" : "0ad4e465-34e5-4ecc-aa47-09a037d8dc82",
+    "inicio" : "2026-11-10T12:00",
+    "fim" : "2026-11-10T13:00"
+  }, {
+    "profissionalId" : "0ad4e465-34e5-4ecc-aa47-09a037d8dc82",
+    "inicio" : "2026-11-10T13:00",
+    "fim" : "2026-11-10T14:00"
+  }, {
+    "profissionalId" : "0ad4e465-34e5-4ecc-aa47-09a037d8dc82",
+    "inicio" : "2026-11-10T14:00",
+    "fim" : "2026-11-10T15:00"
+  } ],
+  "consultas" : [ ]
+}

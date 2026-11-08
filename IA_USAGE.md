@@ -38,3 +38,13 @@ documentação ou decisões.
 - **Resultado aproveitado:** A IA ajudou a reescrever e refatorar os textos para ficarem mais claros e diretos, formatou os exemplos práticos de uso do código na classe `Main` e organizou a documentação de decisões do projeto.
 - **Verificações executadas:** Leitura final dos textos gerados, verificação da legibilidade do código e execução com sucesso da classe `Main`.
 - **Correções ou decisões da equipe:** Ajustada a criação dos objetos `BigDecimal` para garantir precisão exata nos valores monetários informados nos exemplos.
+## Apoio de IA — evolução para o Checkpoint 2
+- **Objetivo:** revisar a aderência do projeto ao enunciado e apoiar a implementação de cadastro, agenda, horários, consultas e menus de terminal.
+- **Parte afetada:** `Profissional`, `Main`, novos pacotes `consulta.repositorio` e `consulta.servico`, além dos testes de `AgendaService` e documentação.
+
+
+## Refatoração dos serviços (08/11/2026)
+- **Objetivo:** separar responsabilidades que estavam concentradas em `AgendaService` e tornar os métodos mais legíveis.
+- **Arquivos:** novos serviços de paciente, profissional, horários, consultas e relatório; `AgendaDados`; atualização da fachada `AgendaService`.
+- **Verificação:** compilação dos serviços Java no ambiente disponível com JDK 21. Os testes Maven/JUnit 6 devem ser reexecutados pela equipe com Java 25.
+- **Decisão:** preservar as validações importantes do enunciado e manter os métodos externos para não quebrar o menu ou a persistência JSON.

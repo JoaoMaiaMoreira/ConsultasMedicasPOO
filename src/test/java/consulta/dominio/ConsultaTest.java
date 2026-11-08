@@ -64,4 +64,35 @@ class ConsultaTest {
 
         assertThrows(DominioException.class, () -> c1.vincularProxima(c2));
     }
+
+    @Test
+    @DisplayName("Deve permitir concluir ou cancelar uma consulta apenas uma vez")
+    void deveRespeitarTransicoesDeEstado() {
+        Consulta concluida = new Consulta(UUID.randomUUID(), paciente, medico, periodo);
+        concluida.concluir();
+        assertEquals(StatusConsultaEnum.CONCLUIDA, concluida.getStatus());
+        assertThrows(DominioException.class, concluida::cancelar);
+        assertThrows(DominioException.class, concluida::concluir);
+
+        Consulta cancelada = new Consulta(UUID.randomUUID(), paciente, medico, periodo);
+        cancelada.cancelar();
+        assertEquals(StatusConsultaEnum.CANCELADA, cancelada.getStatus());
+        assertThrows(DominioException.class, cancelada::concluir);
+    }
+
+    @Test
+    @DisplayName("Deve rejeitar retorno de outro paciente ou outro profissional")
+    void deveRejeitarRetornoComPacienteOuProfissionalDiferente() {
+        Consulta anterior = new Consulta(UUID.randomUUID(), paciente, medico, periodo);
+        LocalDateTime inicio = periodo.fim().plusDays(2);
+        PeriodoRecord periodoRetorno = new PeriodoRecord(inicio, inicio.plusHours(1));
+        Paciente outroPaciente = new Paciente(UUID.randomUUID(), "Outro", "999", "");
+        Consulta retornoOutroPaciente = new Consulta(UUID.randomUUID(), outroPaciente, medico, periodoRetorno);
+        assertThrows(DominioException.class, () -> anterior.vincularProxima(retornoOutroPaciente));
+
+        Profissional outroMedico = new Profissional(UUID.randomUUID(), "Outra médica", EspecialidadeEnum.ODONTOLOGIA);
+        Consulta retornoOutroMedico = new Consulta(UUID.randomUUID(), paciente, outroMedico, periodoRetorno);
+        assertThrows(DominioException.class, () -> anterior.vincularProxima(retornoOutroMedico));
+    }
+
 }

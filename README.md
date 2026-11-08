@@ -1,38 +1,63 @@
-# Plataforma de Reservas - Agendamento de Consultas Médicas
+# Plataforma de Reservas — Agendamento de Consultas Médicas
 
-## Equipe
+# Github
 
-- Integrante 1: João Vitor Maia Moreira.
-  
+https://github.com/JoaoMaiaMoreira/ConsultasMedicasPOO
+
 ## Variante
+**Serviços e atendimentos.** O recurso disputado é a agenda do profissional de saúde.
 
-- **Variante**: Serviços e Atendimentos (Agendamento de Consultas Médicas).
-- **Regra específica**: Uma consulta de retorno (`proximaConsulta`) deve ser agendada no prazo máximo de 30 dias após a `consultaAnterior` e pertencer obrigatoriamente ao mesmo paciente e profissional.
+## Regra específica do domínio
+Uma consulta de retorno deve pertencer ao mesmo paciente e profissional da consulta anterior e ocorrer em até 30 dias.
 
-## Requisitos atendidos
+## Funcionalidades implementadas
+- Cadastro de pacientes com identificador UUID e validação de dados obrigatórios.
+- Cadastro de médicos com especialidade e valor individual da consulta.
+- Cadastro de disponibilidade em blocos consecutivos de uma hora.
+- Consulta de médicos por especialidade e visualização de horários disponíveis.
+- Agendamento apenas em horários cadastrados pelo médico.
+- Bloqueio de conflitos para o mesmo médico e para o mesmo paciente.
+- Cancelamento de consultas, liberando novamente o horário.
+- Consulta dos agendamentos do paciente e do médico.
+- Cálculo do preço com `BigDecimal` e estratégia de preço já existente no projeto.
+- Repositório genérico `Repositorio<T, ID>` com implementação em memória.
+- Interface de terminal usando `Scanner`.
 
-### Checkpoint 1
-
-- **RF1 (Participantes)**: Cadastro e consulta de pacientes com identificador único (`UUID`) e validação de dados obrigatórios.
-- **RF2 (Recursos)**: Cadastro e controlo de estado (`ativo`/`inativo`) dos profissionais de saúde.
-- **RF3 (Períodos)**: Representação de intervalo temporal através da classe imutável `PeriodoRecord` (`record`), com validação e deteção de sobreposição de horários.
-- **RF4 (Reserva)**: Associação entre paciente, profissional e período, garantindo a recusa de agendamentos para profissionais inativos ou com conflito de agenda.
-- **RF5 (Ciclo de vida)**: Controlo de estados da consulta (`AGENDADA`, `CONCLUIDA`, `CANCELADA`) através de `StatusConsultaEnum`, impedindo transições inválidas.
-- **RF7 (Preço ou custo)**: Encapsulamento dos valores monetários em `ValorConsulta` utilizando estritamente `BigDecimal` (sem uso de `double`), preparado para estratégias de cálculo polimórficas via `CalculadoraPreco`.
-
-## Invariantes Preservadas pelo Código
-
-1. **Validade do Período**: O horário de início do período deve ser estritamente anterior ao horário de fim (`inicio < fim`).
-2. **Dados Obrigatórios**: Identificadores (`UUID`), nomes, CPFs e campos fundamentais de cadastro não podem ser nulos nem vazios.
-3. **Disponibilidade do Recurso**: Profissionais inativos não podem receber novos agendamentos de consulta.
-4. **Ausência de Sobreposição**: Não são permitidos dois agendamentos ativos no mesmo intervalo de tempo para o mesmo profissional.
-5. **Limites Monetários**: Todos os valores monetários calculados e salvos devem ser maiores ou iguais a zero (`>= 0`).
-6. **Consistência do Ciclo de Vida**: Transições de estado são definitivas (uma consulta concluída ou cancelada não pode regressar ao estado `AGENDADA`).
-7. **Invariante Própria da Variante**: O agendamento de uma consulta de retorno exige que o intervalo entre as consultas não ultrapasse 30 dias e que ambas partilhem o mesmo paciente e o mesmo profissional.
-
-## Como executar
-
-Para executar a suíte de testes unitários no Linux/macOS:
+## Execução
+Requisito do enunciado: Java 25 LTS.
 
 ```bash
 ./mvnw test
+./mvnw package
+```
+
+Para executar a aplicação pela IDE, execute a classe `consulta.Main`. Alternativamente, no terminal:
+
+```bash
+./mvnw exec:java -Dexec.mainClass=consulta.Main
+```
+
+No Windows, substitua `./mvnw` por `mvnw.cmd`.
+
+Os dados são carregados de `dados/agenda.json` ao iniciar e salvos ao encerrar o programa. O arquivo é JSON legível, sem PostgreSQL, JPA ou Hibernate. Na primeira execução, se não existir arquivo, o sistema começa com uma agenda vazia.
+
+## Estrutura principal
+- `consulta.dominio`: entidades e objetos de valor do domínio.
+- `consulta.estrategia`: contrato e estratégias de cálculo de preço.
+- `consulta.repositorio`: abstração genérica e repositório em memória.
+- `consulta.servico`: regras de agenda e coordenação dos agendamentos.
+- `consulta.Main`: menus e interação com o usuário.
+
+## Verificação
+A suíte de testes automatizados cobre as entidades, as estratégias de preço e os cenários de agendamento, conflito e cancelamento.
+
+## Checkpoints e entrega final
+- Checkpoint 1: entidades, objetos de valor, validações e testes.
+- Checkpoint 2: composição, polimorfismo, repositório genérico, filtros e consultas.
+- Checkpoint 3: estratégias de cancelamento, JSON, restauração e testes.
+- Entrega final: menu, relatórios, documentação e diagrama em `docs/classes.mmd`.
+
+Consulte `docs/checkpoints.md` para as evidências detalhadas.
+
+**Atenção:** o projeto exige JDK 25 e acesso ao Maven Central para baixar dependências na primeira execução.
+

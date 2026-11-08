@@ -45,3 +45,45 @@ Registre decisões que afetem o modelo, a API, as dependências ou a evolução.
 - **Decisão:** Utilizar estritamente `BigDecimal` para guardar e calcular qualquer valor em dinheiro no sistema.
 - **Consequências:** Operações de desconto e cálculo de preço ficam com precisão exata de centavos, evitando erros financeiros.
 - **Teste ou evidência que verifica a decisão:** Verificação das asserções financeiras exatas nos testes de cálculo de preço.
+---
+
+### 5. Serviço de agenda e disponibilidade em blocos de uma hora
+- **Data:** 01/11/2026
+- **Problema observado:** a entidade `Consulta` representa um agendamento, mas não havia um componente responsável por administrar os horários oferecidos e impedir conflitos entre consultas.
+- **Alternativas consideradas:** concentrar as regras na `Main` ou criar um serviço de aplicação dedicado.
+- **Decisão:** criar `AgendaService`, responsável por registrar disponibilidade, listar horários livres, agendar e cancelar consultas. Cada disponibilidade é dividida em blocos de uma hora.
+- **Consequências:** a `Main` fica responsável pela interação, enquanto as regras de agendamento permanecem fora da interface. O cancelamento torna o horário disponível novamente.
+- **Teste ou evidência:** `AgendaServiceTest` verifica preço individual, conflito e liberação após cancelamento.
+
+### 6. Repositório genérico em memória
+- **Data:** 01/11/2026
+- **Problema observado:** o serviço precisava armazenar diferentes tipos de entidades sem duplicar a lógica básica de busca e armazenamento.
+- **Decisão:** criar `Repositorio<T, ID>` e `RepositorioEmMemoria<T, ID>`, recebendo uma função para extrair o identificador da entidade.
+- **Consequências:** a mesma abstração pode armazenar pacientes, profissionais e consultas. A implementação é temporária e não substitui a persistência em arquivo prevista para etapa posterior.
+
+
+### 7. Persistência em JSON com Adapter simples
+
+- **Data:** 08/11/2026
+- **Problema observado:** o projeto precisava preservar cadastros, horários e consultas entre execuções, sem utilizar banco de dados ou ORM.
+- **Alternativas consideradas:** serialização Java nativa, banco relacional/ORM ou arquivo JSON.
+- **Decisão:** usar JSON legível por meio de `ArquivoAgendaJson`, com Jackson apenas para leitura e escrita. O domínio continua sem depender da biblioteca.
+- **Consequências:** os dados ficam inspecionáveis e podem ser restaurados com as validações das entidades. O arquivo não deve conter dados pessoais reais.
+- **Verificação:** `ArquivoAgendaJsonTest` cobre gravação e restauração. A equipe deve executar `./mvnw clean test` com JDK 25.
+
+### 8. Strategy para políticas de cancelamento
+
+- **Data:** 08/11/2026
+- **Problema observado:** o sistema precisa aceitar regras de cancelamento diferentes sem espalhar condicionais pelo serviço.
+- **Alternativas consideradas:** implementar regras diretamente em `AgendaService` ou definir um contrato com implementações substituíveis.
+- **Decisão:** criar `PoliticaCancelamento`, `CancelamentoLivre` e `CancelamentoComAntecedencia`.
+- **Consequências:** a política é escolhida no momento da operação e o serviço permanece independente da regra concreta.
+- **Verificação:** `PoliticasCancelamentoTest` cobre aceitação e rejeição das duas políticas.
+
+### 9. Regra de retorno como regra do domínio
+
+- **Data:** 08/11/2026
+- **Problema observado:** o retorno precisa manter paciente e profissional e respeitar prazo de até 30 dias.
+- **Decisão:** manter a validação do vínculo em `Consulta.vincularProxima` e coordenar o fluxo em `AgendaService.agendarRetorno`.
+- **Consequências:** a regra não depende da interface de terminal; o retorno recebe desconto de 10% após a validação.
+- **Verificação:** a equipe deve testar retorno válido, paciente/profissional diferentes, prazo superior a 30 dias e tentativa de criar mais de um retorno.

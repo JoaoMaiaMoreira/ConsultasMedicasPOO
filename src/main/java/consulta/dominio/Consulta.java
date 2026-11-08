@@ -3,7 +3,6 @@ package consulta.dominio;
 import consulta.estrategia.CalculadoraPreco;
 import consulta.excecao.DominioException;
 
-import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -64,6 +63,14 @@ public class Consulta {
         this.status = StatusConsultaEnum.CANCELADA;
     }
 
+    /** Restaura um valor previamente persistido no arquivo JSON. */
+    public void restaurarValor(ValorConsultaRecord valor) {
+        if (valor == null) {
+            throw new DominioException("O valor da consulta não pode ser nulo.");
+        }
+        this.valorConsulta = valor;
+    }
+
     public void aplicarCalculoPreco(CalculadoraPreco calculadora) {
         if (calculadora == null) {
             throw new DominioException("A calculadora de preço não pode ser nula.");
@@ -81,10 +88,15 @@ public class Consulta {
         if (!this.profissional.equals(proxima.getProfissional())) {
             throw new DominioException("A consulta de retorno deve ser realizada com o mesmo profissional.");
         }
-
-        long diasDiferenca = ChronoUnit.DAYS.between(this.periodo.inicio(), proxima.getPeriodo().inicio());
-        if (diasDiferenca < 0 || diasDiferenca > 30) {
-            throw new DominioException("A consulta de retorno deve ocorrer no prazo máximo de 30 dias após a consulta anterior.");
+        if (this.equals(proxima)) {
+            throw new DominioException("Uma consulta não pode ser seu próprio retorno.");
+        }
+        if (this.proximaConsulta != null || proxima.consultaAnterior != null) {
+            throw new DominioException("Uma consulta já está vinculada a outro retorno.");
+        }
+        if (!proxima.getPeriodo().inicio().isAfter(this.periodo.fim())
+                || proxima.getPeriodo().inicio().isAfter(this.periodo.inicio().plusDays(30))) {
+            throw new DominioException("A consulta de retorno deve ocorrer após a consulta anterior e em até 30 dias.");
         }
 
         this.proximaConsulta = proxima;
@@ -125,8 +137,12 @@ public class Consulta {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Consulta consulta = (Consulta) o;
         return Objects.equals(id, consulta.id);
     }

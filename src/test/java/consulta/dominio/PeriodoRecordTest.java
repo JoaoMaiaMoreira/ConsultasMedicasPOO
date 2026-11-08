@@ -41,4 +41,15 @@ class PeriodoRecordTest {
 
         assertTrue(p1.sobrepoe(p2));
     }
+
+    @Test
+    @DisplayName("Records com os mesmos valores devem ser iguais e possuir o mesmo hashCode")
+    void deveCompararPeriodoPorValor() {
+        LocalDateTime inicio = LocalDateTime.of(2026, 11, 20, 10, 0);
+        PeriodoRecord primeiro = new PeriodoRecord(inicio, inicio.plusHours(1));
+        PeriodoRecord segundo = new PeriodoRecord(inicio, inicio.plusHours(1));
+        assertEquals(primeiro, segundo);
+        assertEquals(primeiro.hashCode(), segundo.hashCode());
+    }
+
 }

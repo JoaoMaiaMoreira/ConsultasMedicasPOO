@@ -3,6 +3,7 @@ package consulta.dominio;
 import consulta.excecao.DominioException;
 
 import java.util.Objects;
+import java.math.BigDecimal;
 import java.util.UUID;
 
 public class Profissional {
@@ -11,13 +12,21 @@ public class Profissional {
     private final String nome;
     private final EspecialidadeEnum especialidade;
     private boolean ativo;
+    private final BigDecimal valorConsulta;
 
     public Profissional(UUID id, String nome, EspecialidadeEnum especialidade) {
-        validarCamposObrigatorios(id, nome, especialidade);
+        this(id, nome, especialidade, BigDecimal.ZERO);
+    }
 
+    public Profissional(UUID id, String nome, EspecialidadeEnum especialidade, BigDecimal valorConsulta) {
+        validarCamposObrigatorios(id, nome, especialidade);
+        if (valorConsulta == null || valorConsulta.compareTo(BigDecimal.ZERO) < 0) {
+            throw new DominioException("O valor da consulta não pode ser nulo ou negativo.");
+        }
         this.id = id;
         this.nome = nome.trim();
         this.especialidade = especialidade;
+        this.valorConsulta = valorConsulta.setScale(2, java.math.RoundingMode.HALF_UP);
         this.ativo = true;
     }
 
@@ -57,10 +66,18 @@ public class Profissional {
         return ativo;
     }
 
+    public BigDecimal getValorConsulta() {
+        return valorConsulta;
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Profissional header = (Profissional) o;
         return Objects.equals(id, header.id);
     }

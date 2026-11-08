@@ -51,8 +51,12 @@ public class Paciente {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Paciente paciente = (Paciente) o;
         return Objects.equals(id, paciente.id);
     }
